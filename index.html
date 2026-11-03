@@ -1,12 +1,35 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="fr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gestion Pro</title>
-</head>
-<body style="font-family:sans-serif;text-align:center;margin-top:80px">
-<h1>Gestion Pro</h1>
-<p>Mon premier test fonctionne !</p>
-</body>
-</html>
+<style>
+body{font-family:sans-serif;margin:0;background:#f4f6f8}
+header{background:#0a7d4b;color:#fff;padding:14px;text-align:center;font-size:20px}
+section{background:#fff;margin:10px;padding:12px;border-radius:10px}
+input,button{font-size:16px;padding:10px;margin:4px 0;width:100%;box-sizing:border-box}
+button{background:#0a7d4b;color:#fff;border:0;border-radius:8px}
+.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:8px 0}
+.row button{width:auto;padding:8px 12px}
+</style></head><body>
+<header>Gestion Pro</header>
+<section><b>Solde : <span id="solde">0</span> FCFA</b><br>Recettes : <span id="rec">0</span> | Dépenses : <span id="dep">0</span></section>
+<section><b>Ajouter un produit</b>
+<input id="pn" placeholder="Nom du produit">
+<input id="pp" type="number" placeholder="Prix de vente (FCFA)">
+<input id="ps" type="number" placeholder="Quantité en stock">
+<button onclick="addP()">Ajouter</button></section>
+<section><b>Produits</b><div id="liste"></div></section>
+<section><b>Ajouter une dépense</b>
+<input id="dn" placeholder="Motif (loyer, transport...)">
+<input id="dm" type="number" placeholder="Montant (FCFA)">
+<button onclick="addD()">Enregistrer</button></section>
+<script>
+let D=JSON.parse(localStorage.getItem("gp")||'{"p":[],"rec":0,"dep":0}');
+function save(){localStorage.setItem("gp",JSON.stringify(D));show()}
+function addP(){let n=pn.value.trim();if(!n)return;D.p.push({n,p:+pp.value||0,s:+ps.value||0});pn.value=pp.value=ps.value="";save()}
+function sell(i){let x=D.p[i];if(x.s<1)return alert("Stock épuisé");x.s--;D.rec+=x.p;save()}
+function addD(){let m=+dm.value;if(!m)return;D.dep+=m;dn.value=dm.value="";save()}
+function show(){liste.innerHTML=D.p.map((x,i)=>`<div class="row"><span>${x.n}<br><small>${x.p} FCFA · stock : ${x.s}</small></span><button onclick="sell(${i})">Vendre</button></div>`).join("")||"Aucun produit";
+rec.textContent=D.rec;dep.textContent=D.dep;solde.textContent=D.rec-D.dep}
+show();
+</script></body></html>
